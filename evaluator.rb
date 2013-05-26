@@ -354,8 +354,9 @@ module Evaluator
         return val if key == :or && value_to_boolean(val)
       end
       return evaluate(exp.ex_val[-1], env, prop)
-    when :quote, :quasiquote
-      return evaluate_quote(key, 
+    when :quote, :quasiquote then
+      raise Type::EvaluateError, "wrong number of arguments for quote" unless exp.ex_val.length == 2
+      return evaluate_quote(key, exp.ex_val[1], env, prop)
     else
       raise Type::EvaluateError, "no such syntax"
     end
