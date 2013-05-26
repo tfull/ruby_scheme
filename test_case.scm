@@ -1,0 +1,42 @@
+1
+#t
+(define id (lambda (x) x))
+(id ((lambda (x) (* x x)) 10))
+(define (length l) (if (null? l) 0 (+ 1 (length (cdr l)))))
+(define (take_args . l) l)
+(length (list 1 2 3 4))
+(take_args 10 100 1000)
+(let loop((n 1) (sum 0)) (if (<= n 10) (loop (+ n 1) (+ sum n)) sum)) 
+(define (curry-cons a)
+ (lambda (b) (cons a b)))
+
+(define (append l1 l2)
+ (if (null? l1)
+  l2
+  (cons (car l1) (append (cdr l1) l2))))
+(define (tie l) (if (null? l) l (append (car l) (tie (cdr l)))))
+(define (map f l)
+ (if (null? l)
+  l
+  (cons (f (car l)) (map f (cdr l)))))
+(define (drop_nth n l)
+ (if (null? l)
+  l
+  (if (= n 0) (cdr l) (cons (car l) (drop_nth (- n 1) (cdr l))))))
+(define (take_nth n l)
+ (if (= n 0)
+  (car l)
+  (take_nth (- n 1) (cdr l))))
+(define (permutation l)
+ (let ((len (length l)))
+  (define (iter i li)
+   (if (< i len)
+    (cons (cons (take_nth i li) (drop_nth i li)) (iter (+ i 1) li))
+    ()))
+  (define (mapf pair)
+   (map (curry-cons (car pair)) (permutation (cdr pair))))
+  (if (= len 0)
+   (list ())
+   (tie (map mapf (iter 0 l))))))
+
+(permutation (list 1 2 3))
