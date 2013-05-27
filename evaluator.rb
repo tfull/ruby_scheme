@@ -310,6 +310,20 @@ module Evaluator
         evaluate(exp.ex_val[i], new_env, prop)
       end
       return evaluate(exp.ex_val[-1], new_env, prop)
+    when :letrec then
+      raise Type::EvaluateError, "few arguments for letrec" if exp.ex_val.length < 2
+      raise Type::EvaluateError, "invalid syntax for letrec" unless exp.ex_val[1].ex_type == :list
+      rests = exp.ex_val[1].ex_val
+      new_env = Type::Scope.new({}, env)
+      for i in 0...(rests.length)
+        raise Type::EvaluateError, "invalid syntax for letrec" unless rests[i].ex_type == :list && rests[i].ex_val.length == 2 && rests[i].ex_val[0].ex_type == :token
+        new_env.data[rests[i].ex_val[0].ex_val] = evaluate(rests[i].ex_val[1], new_env, prop)
+      end
+      return Type::Value.new(:undefined) if exp.ex_val.length == 2
+      for i in 2...(exp.ex_val.length - 1)
+        evaluate(exp.ex_val[1], new_env, prop)
+      end
+      return evaluate(exp.ex_val[-1], new_env, prop)
     when :begin then
       return Type::Value.new(:undefined) if exp.ex_val.length < 2
       for i in 1...(exp.ex_val.length - 1)
@@ -397,11 +411,11 @@ module Evaluator
       return Type::Value.new(:boolean, true)
     when :<, :>, :>=, :<= then
       raise Type::EvaluateError, "few arguments for #{key}" if vals.length < 2
+      raise Type::EvaluateError, "real number required, but got #{num}" if vals[0].vl_type == :complex
       num = value_to_numeric(vals[0])
-      return Type::EvaluateError, "real number required, but got #{num}" if num.vl_type == :complex
       for i in 1...(vals.length)
+        raise Type::EvaluateError, "real number required, but got #{new_num}" if vals[i].vl_type == :complex
         new_num = value_to_numeric(vals[i])
-        return Type::EvaluateError, "real number required, but got #{new_num}" if new_num.vl_type == :complex
         unless num.__send__(key, new_num)
           return Type::Value.new(:boolean, false)
         else
@@ -411,11 +425,11 @@ module Evaluator
       return Type::Value.new(:boolean, true)
     when :max, :min then
       raise Type::EvaluateError, "few arguments for #{key}" if vals.length < 1
+      raise Type::EvaluateError, "real number required, but got #{num}" if vals[0].vl_type == :complex
       num = value_to_numeric(vals[0])
-      return Type::EvaluateError, "real number required, but got #{num}" if num.vl_type == :complex
       for i in 1...(vals.length)
+        raise Type::EvaluateError, "real number required, but got #{new_num}" if vals[i].vl_type == :complex
         new_num = value_to_numeric(vals[i])
-        return Type::EvaluateError, "real number required, but got #{new_num}" if new_num.vl_type == :complex
         if num.__send__({ :max => :<, :min => :> }[key], new_num)
           num = new_num
         end
