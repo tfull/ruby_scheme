@@ -93,6 +93,10 @@ def scheme
         puts ("-+" * 15 + "-")
         puts "EvaluateError: #{e.message}"
         puts ("-+" * 15 + "-")
+      rescue SystemStackError => e
+        puts ("-@" * 15 + "-")
+        puts "SystemStackError: Stack Overflow"
+        puts ("-@" * 15 + "-")
       rescue Type::ExitException
         return
       end
@@ -100,4 +104,6 @@ def scheme
   end
 end
 
-scheme
+if $0 == __FILE__
+  scheme
+end
