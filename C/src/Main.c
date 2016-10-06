@@ -1,7 +1,12 @@
 #include <stdio.h>
 
 int main(int argc, char *argv[]){
-    read();
+    Buffer buf;
+
+    while(1){
+        read(&buf);
+    }
+
     display();
     
     return 0;
