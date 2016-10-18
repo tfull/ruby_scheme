@@ -1,8 +1,8 @@
 module Main where
 
-import Tokenizer as T
-import Parser as P
-import Evaluator as E
+import qualified Tokenizer as T
+import qualified Parser as P
+import qualified Evaluator as E
 import qualified Data.List
 
 getBlock :: IO String
