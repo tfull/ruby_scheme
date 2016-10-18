@@ -1,4 +1,4 @@
-module Tokenizer where
+module Tokenizer (Token (..), tokenize) where
 
 import Data.Char as C
 
