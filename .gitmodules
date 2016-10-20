@@ -1,0 +1,3 @@
+[submodule "Haskell/library"]
+	path = Haskell/library
+	url = git@github.com:tfull/library.git
