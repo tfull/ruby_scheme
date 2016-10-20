@@ -1,6 +1,7 @@
 module Main where
 
 import Result
+import Type
 import qualified Tokenizer as T
 import qualified Parser as P
 import qualified Evaluator as E
@@ -21,6 +22,6 @@ main = loop E.firstEnvironment
 loop :: Environment -> IO ()
 loop env = do
     string <- getBlock
-    case T.tokenize string >>= P.parse >>= E.evaluate E.firstEnvironment of
-        Reject s = putStrLn ("Error: " ++ s) >>= loop env
-        Accept (e, v) = putStrLn (show v) >>= loop e
+    case T.tokenize string >>= P.parse >>= E.evaluate env of
+        Reject s -> putStrLn ("Error: " ++ s) >> loop env
+        Accept (e, v) -> putStrLn (show v) >> loop e

@@ -9,7 +9,6 @@ evaluate env (EList []) = return (env, VNull)
 evaluate env (EList (x:xs)) = do
     (e1, v1) <- evaluate env x
     evaluateList v1 env xs
-evaluate env _ = fail "not implemented"
 
 evaluateList :: Monad m => Value -> Environment -> [Expression] -> m (Environment, Value)
 evaluateList (VSyntax syntax) env exps
