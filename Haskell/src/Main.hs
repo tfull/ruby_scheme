@@ -27,4 +27,4 @@ loop env = do
     string <- getBlock "scheme> "
     case T.tokenize string >>= P.parse >>= E.evaluate env of
         Reject s -> putStrLn ("Error: " ++ s) >> loop env
-        Accept (e, v) -> putStrLn (show v) >> loop e
+        Accept (e, v) -> putStrLn (valueToString v) >> loop e

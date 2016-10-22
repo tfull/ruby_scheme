@@ -6,7 +6,7 @@ import qualified Data.List
 evaluate :: Monad m => Environment -> Expression -> m (Environment, Value)
 evaluate env (EInt i) = return (env, VInt i)
 evaluate env (EVar v) = findValue v env >>= (\val -> return (env, val))
-evaluate env (EList []) = return (env, VNull)
+evaluate env (EList []) = return (env, VNil)
 evaluate env (EList (x:xs)) = do
     (e1, v1) <- evaluate env x
     evaluateList v1 env xs
@@ -40,7 +40,7 @@ findValue s (((k, v) : kvs) : xs)
 syntaxDefine :: Monad m => Environment -> [Expression] -> m (Environment, Value)
 syntaxDefine env (EVar v:e:_) = do
     (envh:envt, value) <- evaluate env e
-    return (((v, value) : envh) : envt, VDefined v)
+    return (((v, value) : envh) : envt, VSymbol v)
 syntaxDefine _ _ = fail "error: define"
 
 subroutinePlus :: Monad m => [Value] -> m Value
@@ -51,11 +51,15 @@ subroutinePlus (VInt i : vs) = do
         VInt j -> return $ VInt $ i + j
         _ -> fail "not a number"
 
+subroutineCons :: Monad m => [Value] -> m Value
+subroutineCons [v0, v1] = return $ VCons v0 v1
+subroutineCons _ = fail "wrong number of arguments for cons"
+
 syntaxList :: Monad m => [(String, Environment -> [Expression] -> m (Environment, Value))]
 syntaxList = [("define", syntaxDefine)]
 
 subroutineList :: Monad m => [(String, [Value] -> m Value)]
-subroutineList = [("+", subroutinePlus)]
+subroutineList = [("+", subroutinePlus), ("cons", subroutineCons)]
 
 firstEnvironment :: Environment
-firstEnvironment = [[ ("define", VSyntax "define"), ("+", VSubroutine "+") ]]
+firstEnvironment = [[ ("define", VSyntax "define"), ("+", VSubroutine "+"), ("cons", VSubroutine "cons") ]]
