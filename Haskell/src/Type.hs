@@ -3,6 +3,7 @@ module Type where
 data Value = VInt Int
     | VNull
     | VSyntax String
+    | VSubroutine String
     | VDefined String
     deriving Show
 
