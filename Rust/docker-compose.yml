@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+    rust:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        user: rust
+        working_dir: /home/rust
+        command: bash
+        tty: true
